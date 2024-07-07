@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Zero</title>
+        <link href="style.css" rel="stylesheet" />
+        <link href="sign.css" rel="stylesheet" />
+        <style>
+            #floating-button {
+                position: fixed;
+                bottom: 1em;
+                right: 50%;
+                transform: translateX(50%);
+                background-color: #16a085;
+                padding: 1em;
+                color: white;
+                display: flex;
+                gap: 1em;
+                align-items: center;
+                cursor: pointer;
+            }
+            #return {
+                color: white;
+                text-decoration: none;
+            }
+            a {
+                color: #f1c40f;
+            }
+            #glink {
+                display: flex;
+                gap: 1em;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+            #note-form,
+            #notes {
+                border: 1px solid #7f8c8d;
+                padding: 1em 0.5em;
+            }
+            #note-form {
+                margin-top: 1em;
+            }
+            #notes {
+                margin-bottom: 1em;
+                border-top: 4px solid #7f8c8d;
+
+                display: flex;
+                gap: 1em;
+            }
+            #notes > div {
+                background-color: rgba(41, 128, 185, 0.25);
+            }
+            #notes .bug {
+                background-color: rgba(241, 196, 15, 0.25);
+            }
+            #notes .enh {
+                background-color: rgba(231, 76, 60, 0.25);
+            }
+            #notes .qst {
+                background-color: rgba(46, 204, 113, 0.25);
+            }
+
+            table {
+                display: block;
+                border: 1px solid #7f8c8d;
+                margin: 1em 0;
+            }
+            td {
+                vertical-align: top;
+            }
+            .note-type {
+                background-color: #2980b9;
+                padding: 0.5em;
+                font-weight: bold;
+            }
+            .bug .note-type {
+                background-color: rgb(241, 196, 15);
+            }
+            .enh .note-type {
+                background-color: rgb(231, 76, 60);
+            }
+            .qst .note-type {
+                background-color: rgb(46, 204, 113);
+            }
+
+            .note-title {
+                display: block;
+                font-weight: bold;
+                margin-bottom: 1em;
+                padding-left: 1em;
+                background-color: rgba(41, 128, 185, 0.25);
+            }
+            .bug .note-title {
+                background-color: rgba(241, 196, 15, 0.25);
+            }
+            .enh .note-title {
+                background-color: rgba(231, 76, 60, 0.25);
+            }
+            .qst .note-title {
+                background-color: rgba(46, 204, 113, 0.25);
+            }
+
+            select {
+                background-color: #222;
+                color: white;
+            }
+            input[name="name"],
+            input[name="github-link"],
+            input[name="one-line-desc"],
+            textarea {
+                display: block;
+                margin: 0.5em 0;
+            }
+
+            input,
+            textarea {
+                padding: 0.2em 0.4em;
+                border: none;
+                background-color: #333;
+                color: white;
+            }
+            input[name="name"] {
+                font-size: xx-large;
+                min-width: fit-content;
+            }
+            input {
+                width: 100%;
+                box-sizing: border-box;
+            }
+            textarea {
+                resize: vertical;
+                width: 100%;
+                box-sizing: border-box;
+                min-height: 4em;
+            }
+            textarea[name="core"] {
+                height: 80vh;
+            }
+
+            button {
+                background-color: #222;
+                color: white;
+                display: inline-flex;
+                gap: 1em;
+                align-items: center;
+                padding: 0.25em;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+
+    <body>
+        <main>
+            <a id="return" href="index.html"><- repos</a>
+            <input placeholder="name" name="name" />
+            <input placeholder="one line description" name="one-line-desc" />
+            <div id="glink">
+                <div id="sign">
+                    <img onclick="toggleSign()" src="svg/info_24dp.svg" />
+                    <div>
+                        <a href="https://github.com/ssiyo" target="_blank">
+                            ssiyo
+                        </a>
+                        <a
+                            href="https://github.com/ssiyo/repozero/issues/new"
+                            target="_blank"
+                        >
+                            feature request
+                        </a>
+                        <a
+                            href="https://github.com/ssiyo/repozero"
+                            target="_blank"
+                        >
+                            codebase
+                        </a>
+                    </div>
+                </div>
+                <a href="">github link</a>
+            </div>
+            <table></table>
+            <div id="core"></div>
+
+            <!-- different mode -->
+            <!-- different mode -->
+            <!-- different mode -->
+
+            <input style="display: none" name="github-link" />
+            <form style="display: none" id="note-form">
+                <select name="note-type">
+                    <option value="d">D</option>
+                    <option value="b">B</option>
+                    <option value="q">Q</option>
+                    <option value="e">E</option>
+                </select>
+                <input placeholder="description" name="note-title" />
+                <textarea placeholder="details" name="note-desc"></textarea>
+                <button onclick="addNewPlan(event)" type="button">
+                    <img src="svg/add_white_24dp.svg" />
+                    ADD
+                </button>
+            </form>
+            <div style="display: none" id="notes"></div>
+            <textarea
+                style="display: none"
+                name="core"
+                placeholder="core"
+            ></textarea>
+        </main>
+
+        <button id="floating-button" onclick="toggleMode()">
+            <img src="svg/mode_edit_white_24dp.svg" />
+            EDIT
+        </button>
+
+        <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+        <script src="main.js"></script>
+        <script>
+            const repo = repos.find(
+                (r) => r.name == sessionStorage.getItem("reponame")
+            );
+            function toggleSign() {
+                const sign = byid("sign");
+                sign.classList.toggle("open");
+            }
+            function toggleMode() {
+                if (curmode == "r") {
+                    curmode = "w";
+                    switchToWriting();
+                } else {
+                    curmode = "r";
+                    switchToReading();
+                }
+            }
+            let curmode = "r";
+
+            const reponameInput = onecss("input[name=name]");
+            const onelinedescInput = onecss("input[name='one-line-desc']");
+            const glinkInput = onecss("input[name='github-link']");
+            const glinkLink = onecss("#glink > a:last-child");
+
+            const glinkDiv = byid("glink");
+            const planingDiv = onecss("table");
+            const noteForm = byid("note-form");
+            const notesDiv = byid("notes");
+            const floatingBtn = byid("floating-button");
+
+            const coreText = byid("core");
+            const coreInput = onecss("textarea[name='core']");
+
+            // updating ui inputs
+            reponameInput.placeholder = repo.name;
+            reponameInput.value = repo.name;
+
+            onelinedescInput.placeholder = repo.oneLineDesc;
+            onelinedescInput.value = repo.oneLineDesc;
+
+            reponameInput.readOnly = true;
+            onelinedescInput.readOnly = true;
+
+            glinkInput.placeholder = repo.githubLink;
+            glinkInput.value = repo.githubLink;
+
+            glinkLink.href = repo.githubLink;
+            if (repo.githubLink == "https://github.com/") {
+                glinkLink.style.display = "none";
+            }
+            displayPlan();
+
+            coreText.innerHTML = toMD(repo.core);
+            coreInput.value = repo.core;
+            
+            if (repo.oneLineDesc == ''){
+                switchToWriting()
+            }
+
+            function switchToWriting() {
+                reponameInput.readOnly = false;
+                onelinedescInput.readOnly = false;
+
+                glinkDiv.style.display = "none";
+                glinkInput.style.display = "block";
+                planingDiv.style.display = "none";
+                coreText.style.display = "none";
+
+                noteForm.style.display = "block";
+                notesDiv.style.display = "block";
+                coreInput.style.display = "block";
+                floatingBtn.style.backgroundColor = "#c0392b";
+                floatingBtn.innerHTML =
+                    "<img src='svg/done_white_24dp.svg' /> SAVE";
+            }
+            function switchToReading() {
+                // changing repo object according to input values
+                // cancel changing if name is taken
+                reponameInput.value = reponameInput.value.trim();
+                if (repo.name != reponameInput.value) {
+                    if (reponameInput.value == "deleteme") {
+                        // delete repo
+                        repos = repos.filter((r) => r.name != repo.name);
+                        saveRepos();
+                        location.href = "index.html";
+                        return;
+                    }
+
+                    if (repos.find((r) => r.name == reponameInput.value)) {
+                        alert("taken name");
+                        return;
+                    }
+                    if (reponameInput.value == "") {
+                        alert("name is required");
+                        return;
+                    }
+                    if (reponameInput.value.includes(" ")) {
+                        alert("name can not contain whitespace");
+                        return;
+                    }
+                }
+                // updating ui
+                reponameInput.readOnly = true;
+                onelinedescInput.readOnly = true;
+
+                glinkDiv.style.display = "flex";
+                glinkInput.style.display = "none";
+                planingDiv.style.display = "block";
+                coreText.style.display = "block";
+
+                noteForm.style.display = "none";
+                notesDiv.style.display = "none";
+                coreInput.style.display = "none";
+                floatingBtn.style.backgroundColor = "#16A085";
+                floatingBtn.innerHTML =
+                    "<img src='svg/mode_edit_white_24dp.svg' /> EDIT";
+
+                // updating variable
+                repo.name = reponameInput.value;
+                repo.oneLineDesc = onelinedescInput.value;
+                repo.githubLink = glinkInput.value;
+                repo.core = coreInput.value;
+
+                // updating ui inputs
+                reponameInput.placeholder = repo.name;
+
+                onelinedescInput.placeholder = repo.oneLineDesc;
+
+                glinkInput.placeholder = repo.githubLink;
+
+                glinkLink.href = repo.githubLink;
+                if (repo.githubLink == "https://github.com/") {
+                    glinkLink.style.display = "none";
+                } else {
+                    glinkLink.style.display = "inline-block";
+                }
+
+                coreText.innerHTML = toMD(repo.core);
+                // saving
+                saveRepos();
+            }
+            function addNewPlan(event) {
+                event.preventDefault();
+                const ptype = noteForm.elements["note-type"].value;
+                const desc = noteForm.elements["note-title"].value;
+                const details = noteForm.elements["note-desc"].value;
+                if (desc.trim() == "") return;
+                addPlan(repo, ptype, desc, details);
+                // noteForm.reset();
+                noteForm.elements["note-title"].value = "";
+                noteForm.elements["note-desc"].value = "";
+                displayPlan();
+            }
+            function displayPlan() {
+                let newHTML1 = "",
+                    newHTML2 = "";
+                // order plans by ptype: d, b, q, e
+                const rankType = {
+                    e: 0,
+                    q: 1,
+                    b: 2,
+                    d: 3,
+                };
+                repo.plans = repo.plans.sort((a, b) => {
+                    return rankType[b.ptype] - rankType[a.ptype];
+                });
+                const ptypeCLass = {
+                    d: "",
+                    b: "bug",
+                    q: "qst",
+                    e: "enh",
+                };
+                for (let i in repo.plans) {
+                    const p = repo.plans[i];
+
+                    newHTML1 += `
+                    <tr class="${ptypeCLass[p.ptype]}">
+                    <td>
+                        <span class="note-type">${p.ptype.toUpperCase()}</span>
+                    </td>
+                    <td>
+                        <span class="note-title">${p.desc}</span>
+                        <div>${toMD(p.details)}</div>
+                    </td>
+                    </tr>
+                    `;
+                    newHTML2 += `
+                    <div class="${ptypeCLass[p.ptype]}">
+                    <button onclick="resetPlan(${i})">
+                        <img src="svg/mode_edit_white_24dp.svg" />
+                    </button>
+                    [${p.ptype.toUpperCase()}] <b>${p.desc}</b>
+                    <div class="note-desc">${toMD(p.details)}</div>
+                    </div>`;
+                }
+                planingDiv.innerHTML = newHTML1;
+                notesDiv.innerHTML = newHTML2;
+            }
+            function resetPlan(pid) {
+                const p = repo.plans[pid];
+                noteForm.elements["note-type"].value = p.ptype;
+                noteForm.elements["note-title"].value = p.desc;
+                noteForm.elements["note-desc"].value = p.details;
+
+                repo.plans = repo.plans.filter((p, i) => i != pid);
+                displayPlan();
+            }
+            function toMD(content) {
+                const md = window.markdownit({
+                    html: true, // Enable HTML tags in source
+                    breaks: true, // Convert '\n' in paragraphs into <br>
+                });
+
+                // Convert content to Markdown format
+                return md.render(content);
+            }
+        </script>
+    </body>
+</html>

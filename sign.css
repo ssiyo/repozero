@@ -1,0 +1,35 @@
+#sign {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    border: 1px solid grey;
+    border-radius: 50%;
+    padding: 0.5em;
+    width: fit-content;
+}
+#sign[class="open"] {
+    border-radius: 0;
+}
+#sign * {
+    background-color: inherit;
+}
+
+#sign[class="open"] img {
+    padding-right: 0.5em;
+    border-right: 1px solid white;
+}
+#sign[class="open"] a {
+    color: white;
+    text-decoration: none;
+    font-family: consolas;
+}
+#sign > div {
+    display: none;
+}
+#sign[class="open"] > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5em;
+    flex-wrap: wrap;
+}

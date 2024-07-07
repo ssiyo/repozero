@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>RepoZero</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/png" href="icon.png" />
+        <link href="style.css" rel="stylesheet" />
+        <link href="manifest.json" rel="manifest" />
+        <style>
+            #add-button {
+                position: fixed;
+                bottom: 1em;
+                right: 50%;
+                transform: translateX(50%);
+                background-color: #8e44ad;
+                padding: 1em;
+                color: white;
+                display: inline-flex;
+                gap: 1em;
+                align-items: center;
+                cursor: pointer;
+            }
+
+            .search-bar {
+                display: flex;
+                align-items: center;
+            }
+
+            input[type="text"] {
+                background-color: #333;
+                color: white;
+                padding: 0.75em 1em;
+                border: none;
+                outline: none;
+                width: 100%;
+                font-size: 100%;
+            }
+
+            label {
+                display: flex;
+                gap: 0.5em;
+                align-items: center;
+            }
+
+            #filter-buttons {
+                display: flex;
+                gap: 1em;
+                margin: 1em 0;
+            }
+            #items {
+                display: flex;
+                flex-direction: column;
+                gap: 1em;
+            }
+
+            .item {
+                border: 1px solid #7f8c8d;
+                padding: 0.5em;
+            }
+            .repo {
+                border-color: #16a085;
+            }
+            input[type="radio"] {
+                margin: 0;
+            }
+            select {
+                background-color: #222;
+                color: white;
+                border: 1px solid #7f8c8d;
+            }
+            label {
+                padding: 0.25em 0.5em;
+            }
+
+            .item h3 {
+                margin: 0;
+                margin-top: 0.5em;
+            }
+            a {
+                color: inherit;
+                text-decoration: inherit;
+            }
+
+            .item .counts {
+                display: flex;
+                gap: 2em;
+                font-size: 14px;
+            }
+            .counts {
+                border-top: 1px solid #7f8c8d;
+            }
+            .repo .counts {
+                border-color: #16a085;
+            }
+            .counts span {
+                padding: 0.4em;
+                border-bottom: 1px solid white;
+            }
+            .repo .counts span {
+                border-color: #16a085;
+            }
+
+            .empty {
+                opacity: 0.25;
+            }
+        </style>
+    </head>
+
+    <body>
+        <main>
+            <div class="search-bar">
+                <input type="text" placeholder="Search for <name>" />
+            </div>
+
+            <div id="filter-buttons">
+                <select id="filter-count">
+                    <option>_</option>
+                    <option value="d">D</option>
+                    <option value="b">B</option>
+                    <option value="q">Q</option>
+                    <option value="e">E</option>
+                </select>
+
+                <select id="filter-type">
+                    <option>_</option>
+                    <option>zeros</option>
+                    <option>repos</option>
+                </select>
+            </div>
+            <div id="items"></div>
+        </main>
+
+        <button id="add-button" onclick="newOne()">
+            <img src="svg/add_white_24dp.svg" />
+            ONE
+        </button>
+
+        <script src="main.js"></script>
+        <script>
+            const itemsContainer = byid("items");
+            const filterCount = byid("filter-count");
+            const filterType = byid("filter-type");
+            const searchInput = onecss('input[type="text"]');
+            searchInput.oninput = listRepos;
+            filterCount.onchange = listRepos;
+            filterType.onchange = listRepos;
+
+            listRepos();
+            // Function to filter items based on the selected filter
+            function listRepos() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const filterValue = filterType.value;
+                const countValue = filterCount.value;
+
+                const filteredItems = repos.filter((repo) => {
+                    const nameLowercase = repo.name.toLowerCase();
+                    validname =
+                        nameLowercase.includes(searchTerm) ||
+                        nameLowercase.startsWith(filterValue);
+                    let validType = true;
+                    if (filterValue == "repos") {
+                        validType = repo.githubLink != "https://github.com/";
+                    } else if (filterValue == "zeros") {
+                        validType = repo.githubLink == "https://github.com/";
+                    }
+                    return validname && validType;
+                });
+
+                if (countValue != "_") {
+                    const sortedItems = filteredItems.sort((a, b) => {
+                        return (
+                            countPlanType(b, countValue) -
+                            countPlanType(a, countValue)
+                        );
+                    });
+                    displayItems(sortedItems);
+                } else {
+                    displayItems(filteredItems);
+                }
+            }
+            function displayItems(items) {
+                let newHTML = "";
+                for (let i of items) {
+                    newHTML += `
+                    <div class="item ${
+                        i.githubLink == "https://github.com/" ? "" : "repo"
+                    }" onclick="openZero('${i.name}')">
+                    <h3>${i.name}</h3>
+                    <p>${i.oneLineDesc}</p>
+                    <div class="counts">
+                        <span class="${
+                            countPlanType(i, "d") == 0 ? "empty" : ""
+                        }">D ${countPlanType(i, "d")}</span>
+                        <span class="${
+                            countPlanType(i, "b") == 0 ? "empty" : ""
+                        }">B ${countPlanType(i, "b")}</span>
+                        <span class="${
+                            countPlanType(i, "q") == 0 ? "empty" : ""
+                        }">Q ${countPlanType(i, "q")}</span>
+                        <span class="${
+                            countPlanType(i, "e") == 0 ? "empty" : ""
+                        }">E ${countPlanType(i, "e")}</span>
+                    </div>
+                </div>`;
+                }
+                itemsContainer.innerHTML = newHTML;
+            }
+            function newOne() {
+                let repocode = repos.length;
+                // increase number as long as an other has it as its name
+                while (repos.find((repo) => repo.name == repocode)) {
+                    repocode++;
+                }
+                const reponame = `${repocode}`;
+
+                repos.push(new Repo(reponame, "", "https://github.com/", ""));
+                saveRepos();
+                openZero(reponame);
+            }
+            function openZero(reponame) {
+                sessionStorage.setItem("reponame", reponame);
+                location.href = "repo.html";
+            }
+        </script>
+        <script>
+            if ("serviceWorker" in navigator) {
+                navigator.serviceWorker
+                    .register("/sw.js")
+                    .then((registration) => {
+                        console.log(
+                            "Service Worker registered with scope:",
+                            registration.scope
+                        );
+                    })
+                    .catch((error) => {
+                        console.error(
+                            "Service Worker registration failed:",
+                            error
+                        );
+                    });
+            }
+        </script>
+    </body>
+</html>
