@@ -26,3 +26,5 @@ plan action types:
 - B: bug
 - Q: question
 - E: enhancement
+
+rename a repo to "deleteme" for its deletion
