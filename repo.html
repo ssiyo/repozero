@@ -7,6 +7,10 @@
         <link href="style.css" rel="stylesheet" />
         <link href="sign.css" rel="stylesheet" />
         <style>
+            main {
+                max-width: 40em;
+                margin: 0 auto;
+            }
             #floating-button {
                 position: fixed;
                 bottom: 1em;
@@ -157,7 +161,7 @@
                 background-color: rgba(0, 0, 0, 0.5);
             }
             pre {
-                overflow-x:auto;
+                overflow-x: auto;
                 background-color: #111;
                 padding: 0.5em;
             }
@@ -213,7 +217,7 @@
                     <option value="d">Development</option>
                     <option value="b">Bug</option>
                     <option value="q">Question</option>
-                    <option value="e">Enhancement</option>
+                    <option value="e" selected>Enhancement</option>
                 </select>
                 <input placeholder="description" name="note-title" />
                 <textarea placeholder="details" name="note-desc"></textarea>
@@ -235,7 +239,7 @@
             EDIT
         </button>
 
-        <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+        <script src="markdown-it.min.js"></script>
         <script src="main.js"></script>
         <script>
             const repo = repos.find(
@@ -254,6 +258,16 @@
                     switchToReading();
                 }
             }
+            byid("return").onclick = (event) => {
+                event.preventDefault();
+                if (curmode == "w") {
+                    if (confirm("discard unsaved changes?")) {
+                        location.href = "index.html";
+                    }
+                } else {
+                    location.href = "index.html";
+                }
+            };
             let curmode = "r";
 
             const reponameInput = onecss("input[name=name]");
@@ -313,7 +327,7 @@
                     "<img src='svg/done_white_24dp.svg' /> SAVE";
             }
             function switchToReading() {
-                noteForm.submit()
+                noteForm.querySelector("button").click();
                 // changing repo object according to input values
                 // cancel changing if name is taken
                 reponameInput.value = reponameInput.value.trim();

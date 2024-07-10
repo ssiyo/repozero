@@ -14,7 +14,7 @@ const cf = [
 
     "/svg/add_white_24dp.svg",
     "/svg/add_black_24dp.svg",
-    "/svg/indo_24dp.svg",
+    "/svg/info_24dp.svg",
     "/svg/done_white_24dp.svg",
     "/svg/mode_edit_white_24dp.svg",
 ];

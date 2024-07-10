@@ -13,12 +13,10 @@ body {
     background-color: #222;
     color: white;
     margin: 0;
+    margin-bottom: 4em;
 }
 
 main {
-    max-width: 40em;
-    margin: 0 auto;
-    margin-bottom: 4em;
     padding: 0.5em;
 }
 
