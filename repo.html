@@ -12,13 +12,16 @@
                 bottom: 1em;
                 right: 50%;
                 transform: translateX(50%);
-                background-color: #16a085;
                 padding: 1em;
+                background-color: black;
                 color: white;
                 display: flex;
                 gap: 1em;
                 align-items: center;
                 cursor: pointer;
+            }
+            #floating-button.save {
+                box-shadow: 0 -1px 0 1px white;
             }
             #return {
                 color: white;
@@ -35,15 +38,21 @@
             }
             #note-form,
             #notes {
-                border: 1px solid #7f8c8d;
-                padding: 1em 0.5em;
+                border: 1px solid #666;
+                padding: 0.5em;
             }
             #note-form {
+                flex-direction: column;
+                align-items: start;
+                gap: 0.5em;
                 margin-top: 1em;
+            }
+            #note-form * {
+                margin: 0;
             }
             #notes {
                 margin-bottom: 1em;
-                border-top: 4px solid #7f8c8d;
+                border-top: 4px solid #666;
 
                 display: flex;
                 gap: 1em;
@@ -61,13 +70,13 @@
                 background-color: rgba(46, 204, 113, 0.25);
             }
 
-            table {
-                display: block;
-                border: 1px solid #7f8c8d;
+            #planing {
+                border: 1px solid #666;
                 margin: 1em 0;
             }
-            td {
-                vertical-align: top;
+            #planing > div > div:first-child {
+                display: flex;
+                align-items: center;
             }
             .note-type {
                 background-color: #2980b9;
@@ -85,9 +94,8 @@
             }
 
             .note-title {
-                display: block;
+                width: 100%;
                 font-weight: bold;
-                margin-bottom: 1em;
                 padding-left: 1em;
                 background-color: rgba(41, 128, 185, 0.25);
             }
@@ -101,24 +109,21 @@
                 background-color: rgba(46, 204, 113, 0.25);
             }
 
-            select {
-                background-color: #222;
-                color: white;
+            input:read-only {
+                background-color: transparent;
             }
             input[name="name"],
             input[name="github-link"],
             input[name="one-line-desc"],
             textarea {
                 display: block;
-                margin: 0.5em 0;
+                margin: 0.5rem 0;
             }
 
             input,
             textarea {
                 padding: 0.2em 0.4em;
                 border: none;
-                background-color: #333;
-                color: white;
             }
             input[name="name"] {
                 font-size: xx-large;
@@ -139,13 +144,22 @@
             }
 
             button {
-                background-color: #222;
+                background-color: #666;
                 color: white;
+
                 display: inline-flex;
                 gap: 1em;
                 align-items: center;
                 padding: 0.25em;
                 cursor: pointer;
+            }
+            #notes button {
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+            pre {
+                overflow-x:auto;
+                background-color: #111;
+                padding: 0.5em;
             }
         </style>
     </head>
@@ -153,8 +167,12 @@
     <body>
         <main>
             <a id="return" href="index.html"><- repos</a>
-            <input placeholder="name" name="name" />
-            <input placeholder="one line description" name="one-line-desc" />
+            <input autocomplete="off" placeholder="name" name="name" />
+            <input
+                autocomplete="off"
+                placeholder="one line description"
+                name="one-line-desc"
+            />
             <div id="glink">
                 <div id="sign">
                     <img onclick="toggleSign()" src="svg/info_24dp.svg" />
@@ -178,20 +196,24 @@
                 </div>
                 <a href="">github link</a>
             </div>
-            <table></table>
+            <div id="planing"></div>
             <div id="core"></div>
 
             <!-- different mode -->
             <!-- different mode -->
             <!-- different mode -->
 
-            <input style="display: none" name="github-link" />
+            <input
+                autocomplete="off"
+                style="display: none"
+                name="github-link"
+            />
             <form style="display: none" id="note-form">
                 <select name="note-type">
-                    <option value="d">D</option>
-                    <option value="b">B</option>
-                    <option value="q">Q</option>
-                    <option value="e">E</option>
+                    <option value="d">Development</option>
+                    <option value="b">Bug</option>
+                    <option value="q">Question</option>
+                    <option value="e">Enhancement</option>
                 </select>
                 <input placeholder="description" name="note-title" />
                 <textarea placeholder="details" name="note-desc"></textarea>
@@ -240,7 +262,7 @@
             const glinkLink = onecss("#glink > a:last-child");
 
             const glinkDiv = byid("glink");
-            const planingDiv = onecss("table");
+            const planingDiv = byid("planing");
             const noteForm = byid("note-form");
             const notesDiv = byid("notes");
             const floatingBtn = byid("floating-button");
@@ -269,9 +291,9 @@
 
             coreText.innerHTML = toMD(repo.core);
             coreInput.value = repo.core;
-            
-            if (repo.oneLineDesc == ''){
-                switchToWriting()
+
+            if (repo.oneLineDesc == "") {
+                toggleMode();
             }
 
             function switchToWriting() {
@@ -283,14 +305,15 @@
                 planingDiv.style.display = "none";
                 coreText.style.display = "none";
 
-                noteForm.style.display = "block";
+                noteForm.style.display = "flex";
                 notesDiv.style.display = "block";
                 coreInput.style.display = "block";
-                floatingBtn.style.backgroundColor = "#c0392b";
+                floatingBtn.classList.add("save");
                 floatingBtn.innerHTML =
                     "<img src='svg/done_white_24dp.svg' /> SAVE";
             }
             function switchToReading() {
+                noteForm.submit()
                 // changing repo object according to input values
                 // cancel changing if name is taken
                 reponameInput.value = reponameInput.value.trim();
@@ -328,7 +351,7 @@
                 noteForm.style.display = "none";
                 notesDiv.style.display = "none";
                 coreInput.style.display = "none";
-                floatingBtn.style.backgroundColor = "#16A085";
+                floatingBtn.classList.remove("save");
                 floatingBtn.innerHTML =
                     "<img src='svg/mode_edit_white_24dp.svg' /> EDIT";
 
@@ -391,15 +414,13 @@
                     const p = repo.plans[i];
 
                     newHTML1 += `
-                    <tr class="${ptypeCLass[p.ptype]}">
-                    <td>
+                    <div class="${ptypeCLass[p.ptype]}">
+                        <div>
                         <span class="note-type">${p.ptype.toUpperCase()}</span>
-                    </td>
-                    <td>
                         <span class="note-title">${p.desc}</span>
+                        </div>
                         <div>${toMD(p.details)}</div>
-                    </td>
-                    </tr>
+                    </div>
                     `;
                     newHTML2 += `
                     <div class="${ptypeCLass[p.ptype]}">

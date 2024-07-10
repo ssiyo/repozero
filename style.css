@@ -1,19 +1,39 @@
 * {
-    outline: none;
     font-family: consolas;
-    font-size: 100%;
+    outline: none;
     border: none;
 }
+textarea,
+input,
+select,
+button {
+    font-size: 100%;
+}
 body {
-    background-color: #2c3e50;
+    background-color: #222;
     color: white;
     margin: 0;
 }
 
 main {
-    max-width: 800px;
+    max-width: 40em;
     margin: 0 auto;
     margin-bottom: 4em;
     padding: 0.5em;
 }
 
+select {
+    background-color: #444;
+    color: white;
+    border: 1px solid #aaa;
+}
+
+textarea,
+input {
+    background-color: #111;
+    color: white;
+}
+textarea:focus,
+input:focus {
+    box-shadow: 0 0 0 1px #888;
+}

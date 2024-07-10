@@ -13,9 +13,10 @@
                 bottom: 1em;
                 right: 50%;
                 transform: translateX(50%);
-                background-color: #8e44ad;
-                padding: 1em;
+                background-color: #666;
+
                 color: white;
+                padding: 1em;
                 display: inline-flex;
                 gap: 1em;
                 align-items: center;
@@ -23,13 +24,15 @@
             }
 
             .search-bar {
+                max-width: 40em;
+                margin: 0 auto;
                 display: flex;
-                align-items: center;
+                flex-direction: column;
+
+                align-items: flex-start;
             }
 
-            input[type="text"] {
-                background-color: #333;
-                color: white;
+            input {
                 padding: 0.75em 1em;
                 border: none;
                 outline: none;
@@ -50,25 +53,22 @@
             }
             #items {
                 display: flex;
-                flex-direction: column;
                 gap: 1em;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: center;
             }
 
             .item {
-                border: 1px solid #7f8c8d;
+                width: 100%;
+                max-width: 36em;
+                border: 1px solid #888;
                 padding: 0.5em;
             }
             .repo {
                 border-color: #16a085;
             }
-            input[type="radio"] {
-                margin: 0;
-            }
-            select {
-                background-color: #222;
-                color: white;
-                border: 1px solid #7f8c8d;
-            }
+
             label {
                 padding: 0.25em 0.5em;
             }
@@ -88,7 +88,7 @@
                 font-size: 14px;
             }
             .counts {
-                border-top: 1px solid #7f8c8d;
+                border-top: 1px solid #888;
             }
             .repo .counts {
                 border-color: #16a085;
@@ -111,22 +111,22 @@
         <main>
             <div class="search-bar">
                 <input type="text" placeholder="Search for <name>" />
-            </div>
 
-            <div id="filter-buttons">
-                <select id="filter-count">
-                    <option>_</option>
-                    <option value="d">D</option>
-                    <option value="b">B</option>
-                    <option value="q">Q</option>
-                    <option value="e">E</option>
-                </select>
+                <div id="filter-buttons">
+                    <select id="filter-count">
+                        <option>_</option>
+                        <option value="d">D</option>
+                        <option value="b">B</option>
+                        <option value="q">Q</option>
+                        <option value="e">E</option>
+                    </select>
 
-                <select id="filter-type">
-                    <option>_</option>
-                    <option>zeros</option>
-                    <option>repos</option>
-                </select>
+                    <select id="filter-type">
+                        <option>_</option>
+                        <option>zeros</option>
+                        <option>repos</option>
+                    </select>
+                </div>
             </div>
             <div id="items"></div>
         </main>
@@ -220,6 +220,9 @@
             }
             function openZero(reponame) {
                 sessionStorage.setItem("reponame", reponame);
+                // move repo to top
+                repos = [repos.find(r=>r.name == reponame), ...repos.filter(r=>r.name != reponame)]
+                saveRepos()
                 location.href = "repo.html";
             }
         </script>
